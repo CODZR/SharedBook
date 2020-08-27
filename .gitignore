@@ -1,0 +1,6 @@
+venv/
+.idea/
+SharedBook/settings.py
+db.sqlite3
+uwsgi.ini
+static/
