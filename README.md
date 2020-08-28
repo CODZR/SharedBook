@@ -1,5 +1,6 @@
 # SharedBook
-共享绘本微信小程序的API接口(基于`python3.6.8`和`django3.0.7`)
+共享绘本微信小程序的API接口(基于`python3.6.8`和`django3.0.7`)<br>
+[小程序演示视频地址](https://www.bilibili.com/video/BV1x54y127iD/)
 ## 主要功能：
 
 - 绘本添加、查询（Max/MinIdFilter支持每次显示10本，下次从Max/MinId继续查询，NameFilter）接口
