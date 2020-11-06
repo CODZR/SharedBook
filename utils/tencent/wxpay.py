@@ -4,8 +4,9 @@ import hashlib
 
 def get_nonce_str():
     import uuid
-    
+
     return uuid.uuid4().hex
+
 
 # 生成签名的函数
 def paysign(**params):
@@ -28,9 +29,9 @@ def paysign(**params):
     sign = hashlib.md5(stringSignTemp.encode("utf-8")).hexdigest()
     return sign.upper()
 
+
 def getWxPayOrderID():
     import datetime
-    
     date = datetime.datetime.now()
     # 根据当前系统时间来生成商品订单号。时间精确到微秒
     return date.strftime("%Y%m%d%H%M%S%f")
@@ -38,7 +39,7 @@ def getWxPayOrderID():
 
 #获取返回给小程序的paySign
 def get_paysign(prepay_id,timeStamp,nonceStr):
-    
+
     pay_data= {
         'appId': WX_APPID,
         'nonceStr': nonceStr,
@@ -83,9 +84,9 @@ def get_bodyData(**params):
         bodyData += '<notify_url>' + notify_url + '</notify_url>'  # 支付成功的回调地址
         bodyData += '<total_fee>' + total_fee + '</total_fee>'  # 总金额 单位为分
         bodyData += '<trade_type>JSAPI</trade_type>'  # 交易类型 小程序取值如下：JSAPI
-    
+
     bodyData += '<sign>' + sign + '</sign>'
     bodyData += '</xml>'
-    
+
     return bodyData
 

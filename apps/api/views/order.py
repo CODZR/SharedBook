@@ -51,7 +51,8 @@ class ShoppingCartView(ListAPIView, CreateAPIView, DestroyAPIView):
             print(request.user.id)
             models.ShoppingCartRecord.objects.get(book=book_id,user=request.user.id).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
+
 class BookOrderView(ListAPIView):
     authentication_classes = [UserAuthentication, ]
     
@@ -87,6 +88,7 @@ class OrderView(ListAPIView,CreateAPIView,DestroyAPIView,UpdateAPIView):
         order_serializer.save()
         data = {"id": order_serializer.data['id'], "order_status":order_serializer.data['order_status']}
         return Response(data=data,status=HTTP_201_CREATED)
+
     def put(self, request, *args, **kwargs):
         if request.data['order_type']==2 and request.data['order_status']==2:  # 押金订单且已支付
             models.UserInfo.objects.filter(pk=request.user.id).update(deposit=True)
@@ -97,6 +99,7 @@ class OrderView(ListAPIView,CreateAPIView,DestroyAPIView,UpdateAPIView):
         print(serializer.errors)
         self.perform_update(serializer)
         return Response(data=serializer.data,status=HTTP_200_OK)
+
     def delete(self, request, *args, **kwargs):
         models.Order.objects.get(id=request.data['id']).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -105,6 +108,7 @@ class OrderView(ListAPIView,CreateAPIView,DestroyAPIView,UpdateAPIView):
 class UnifiedOrderView(APIView):
     """统一下单"""
     authentication_classes = [UserAuthentication, ]
+
     def post(self, request, *args, **kwargs):
         user_id = self.request.user.id
         if models.Order.objects.filter(user=user_id,order_status__in=[1,2]).count() > 1:
@@ -116,7 +120,8 @@ class UnifiedOrderView(APIView):
         openid = models.UserInfo.objects.get(pk=request.user.id).openid
         out_trade_no = request.data['out_trade_no']
         print(out_trade_no)
-        if out_trade_no == None:  # 如果未传入out_trade_no说明是新订单
+
+        if out_trade_no is None:  # 如果未传入out_trade_no说明是新订单
             out_trade_no = getWxPayOrderID()  # 商户订单号
         
         # 请求微信的url
@@ -148,23 +153,29 @@ class UnifiedOrderView(APIView):
             data = {"prepay_id": prepay_id, "nonceStr": nonceStr, "paySign": paySign, "timestamp": timestamp,
                     "out_trade_no": out_trade_no}
 
-            return Response(data,status=HTTP_200_OK)
+            return Response(data, status=HTTP_200_OK)
     
         else:
             return HttpResponse("请求支付失败")
 
+
 class OrderStatusView(APIView):
     """修改订单状态"""
     authentication_classes = [UserAuthentication, ]
+
     def post(self, request, *args, **kwargs):
         print(request.data)
+
+
 class PaySuccessView(APIView):
     def post(self, request, *args, **kwargs):
         print(request.data)
-        
+
+
 class OrderQueryView(APIView):
     """查询订单"""
     authentication_classes = [UserAuthentication, ]
+
     def post(self, request, *args, **kwargs):
         # 商户订单号
         # out_trade_no = request.data.get('out_trade_no')
@@ -183,7 +194,6 @@ class OrderQueryView(APIView):
         content = x.parse(response.content)['xml']
         print(content)
 
-        
         if content['return_code'].decode('UTF-8') == 'SUCCESS':
             trade_state = content['trade_state'].decode('UTF-8')
             time_end = content['time_end'].decode('UTF-8')
@@ -194,7 +204,8 @@ class OrderQueryView(APIView):
 
         else:
             return HttpResponse("查询支付失败")
-        
+
+
 class PayView(RetrieveAPIView):
     authentication_classes = [UserAuthentication, ]
     # queryset = models.Order.objects.filter(status=1)
